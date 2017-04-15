@@ -13,7 +13,12 @@ class App extends React.Component {
   state = {
     authorFilter: "all",
     genreFilter: "all",
-    yearFilter: "all"
+    yearFilter: "all",
+    sortByArtist: true,
+    sortBySong: false,
+    sortByGenre: false,
+    sortByYear: false,
+    sortAscending: true
   }
   changeYearFilter = (e, {name, value}) => this.setState({yearFilter: value})
   changeGenreFilter = (e, {name, value}) => this.setState({genreFilter: value})
@@ -21,6 +26,32 @@ class App extends React.Component {
 
   render() {
     const {playList, prepareFilter} = this.props
+    
+    this.state.sortByArtist && playList.sort( (a,b) => {
+      if(a.author > b.author) return this.state.sortAscending? 1 : -1
+      if(a.author < b.author) return this.state.sortAscending? -1 : 1
+      return 0
+    })
+    
+    this.state.sortBySong && playList.sort( (a,b) => {
+      if(a.song > b.song) return this.state.sortAscending? 1 : -1
+      if(a.song < b.song) return this.state.sortAscending? -1 : 1
+      return 0
+    })
+    
+    this.state.sortByGenre && playList.sort( (a,b) => {
+      if(a.genre > b.genre) return this.state.sortAscending? 1 : -1
+      if(a.genre < b.genre) return this.state.sortAscending? -1 : 1
+      return 0
+    })
+    
+    this.state.sortByYear && playList.sort( (a,b) => {
+      if(a.year > b.year) return this.state.sortAscending? 1 : -1
+      if(a.year < b.year) return this.state.sortAscending? -1 : 1
+      return 0
+    })
+
+
     let filterAuthor =[], filterGenre = [], filterYear = []
     return (
       <Container>
@@ -35,10 +66,18 @@ class App extends React.Component {
             <Grid.Column width="13">
               <Table sortable striped compact>
                 <Table.Header>
-                  <Table.HeaderCell><Icon name="user"/>Исполнитель</Table.HeaderCell>
-                  <Table.HeaderCell><Icon name="sound"/>Песня</Table.HeaderCell>
-                  <Table.HeaderCell><Icon name="tag"/>Жанр</Table.HeaderCell>
-                  <Table.HeaderCell><Icon name="calendar"/>Год</Table.HeaderCell>
+                  <Table.HeaderCell
+                  onClick={() => this.setState({sortByArtist: true, sortByGenre: false, sortByYear: false, sortBySong: false, sortAscending: !this.state.sortAscending})}>
+                  <Icon name="user"/>Исполнитель <Icon name={this.state.sortByArtist ? this.state.sortAscending ? "sort ascending" : "sort descending" : "sort"}/></Table.HeaderCell>
+                  <Table.HeaderCell
+                  onClick={() => this.setState({sortByArtist: false, sortByGenre: false, sortByYear: false, sortBySong: true, sortAscending: !this.state.sortAscending})}
+                  ><Icon name="sound"/>Песня <Icon name={this.state.sortBySong ? this.state.sortAscending ? "sort ascending" : "sort descending" : "sort"}/></Table.HeaderCell>
+                  <Table.HeaderCell
+                  onClick={() => this.setState({sortByArtist: false, sortByGenre: true, sortByYear: false, sortBySong: false, sortAscending: !this.state.sortAscending})}
+                  ><Icon name="tag"/>Жанр <Icon name={this.state.sortByGenre ? this.state.sortAscending ? "sort ascending" : "sort descending" : "sort"}/></Table.HeaderCell>
+                  <Table.HeaderCell
+                  onClick={() => this.setState({sortByArtist: false, sortByGenre: false, sortByYear: true, sortBySong: false, sortAscending: !this.state.sortAscending})}
+                  ><Icon name="calendar"/>Год <Icon name={this.state.sortByYear ? this.state.sortAscending ? "sort ascending" : "sort descending" : "sort"}/></Table.HeaderCell>
                 </Table.Header>
                 <Table.Body>
                   {playList !== undefined && playList.map(x => 

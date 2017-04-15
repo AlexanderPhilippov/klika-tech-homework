@@ -36,7 +36,7 @@ const removeDublicates = (arr) => {
       values.push(x)
     }
   })
-  return values
+  return values.sort()
 }
 
 const prepareFilter = (arr) => {
