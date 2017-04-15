@@ -16,30 +16,40 @@ function storeManager(state = [], action) {
   return (state)
 }
 const store = createStore(storeManager)
-  const initialFilter = {
-      text: "Все",
-      value: "all"
+const initialFilter = {
+  text: "Все",
+  value: "all"
+}
+
+const makeFilterOption = (arr) => {
+  const options = []
+  arr.forEach(x => {
+    options.push({text: x, value: x})
+  })
+  return options
+}
+
+const removeDublicates = (arr) => {
+  const values = []
+  arr.forEach(x => {
+    if (!values.includes(x)) {
+      values.push(x)
     }
-    const years = [initialFilter],
-      genres = [initialFilter],
-      authors = [initialFilter]
+  })
+  return values
+}
 
-    // store.subscribe( () => console.log('Subscribe', store.getState()) )
+const prepareFilter = (arr) => {
+  return [
+    initialFilter, ...makeFilterOption(removeDublicates(arr))
+  ]
+}
 
-    data
-      .playList
-      .forEach(x => {
-        store.dispatch({type: 'ADD_TO_PLAYLIST', track: x})
-        years.push({text: x.year, value: x.year})
-        genres.push({text: x.genre, value: x.genre})
-        authors.push({text: x.author, value: x.author})
-      })
+data
+  .playList
+  .forEach(x => {
+    store.dispatch({type: 'ADD_TO_PLAYLIST', track: x})
+  })
 
-    ReactDOM.render(
-      <App
-      playList={store.getState()}
-      filterData={{
-      years,
-      genres,
-      authors
-    }}/>, document.getElementById('root'));
+ReactDOM.render(
+  <App playList={store.getState()} prepareFilter={prepareFilter}/>, document.getElementById('root'));

@@ -20,7 +20,8 @@ class App extends React.Component {
   changeAuthorFilter = (e, {name, value}) => this.setState({authorFilter: value})
 
   render() {
-    const {playList, filterData} = this.props
+    const {playList, prepareFilter} = this.props
+    let filterAuthor =[], filterGenre = [], filterYear = []
     return (
       <Container>
         <Header as='h2' icon textAlign='center'>
@@ -44,6 +45,7 @@ class App extends React.Component {
                     ((this.state.yearFilter === 'all' || this.state.yearFilter === x.year) &&
                       (this.state.genreFilter === 'all' || this.state.genreFilter === x.genre) &&
                       (this.state.authorFilter === 'all' || this.state.authorFilter === x.author)) &&
+                      (filterAuthor.push(x.author) && filterGenre.push(x.genre) && filterYear.push(x.year)) &&
                     <Table.Row key={`${x.author}_${x.song}`}>
                     <Table.Cell>{x.author}</Table.Cell>
                     <Table.Cell>{x.song}</Table.Cell>
@@ -69,7 +71,7 @@ class App extends React.Component {
                         search
                         selection
                         closeOnChange
-                        options={filterData.authors}
+                        options={prepareFilter(filterAuthor)}
                         onChange={this.changeAuthorFilter}
                         value={this.state.authorFilter}/></Table.Cell>
                   </Table.Row>
@@ -80,7 +82,7 @@ class App extends React.Component {
                         search
                         selection
                         closeOnChange
-                        options={filterData.genres}
+                        options={prepareFilter(filterGenre)}
                         onChange={this.changeGenreFilter}
                         value={this.state.genreFilter}/></Table.Cell>
                   </Table.Row>
@@ -91,7 +93,7 @@ class App extends React.Component {
                         search
                         selection
                         closeOnChange
-                        options={filterData.years}
+                        options={prepareFilter(filterYear)}
                         onChange={this.changeYearFilter}
                         value={this.state.yearFilter}/></Table.Cell>
                   </Table.Row>
