@@ -6,7 +6,8 @@ import {
   Icon,
   Grid,
   Dropdown,
-  Label
+  Label,
+  Button
 } from 'semantic-ui-react'
 
 class App extends React.Component {
@@ -18,7 +19,10 @@ class App extends React.Component {
     sortBySong: false,
     sortByGenre: false,
     sortByYear: false,
-    sortAscending: true
+    sortAscending: true,
+    sliceBegin: 0,
+    sliceEnd: 15,
+    pageSize: 15
   }
   changeYearFilter = (e, {name, value}) => this.setState({yearFilter: value})
   changeGenreFilter = (e, {name, value}) => this.setState({genreFilter: value})
@@ -51,7 +55,6 @@ class App extends React.Component {
       return 0
     })
 
-
     let filterAuthor =[], filterGenre = [], filterYear = []
     return (
       <Container>
@@ -64,14 +67,14 @@ class App extends React.Component {
         <Grid divided="vertically">
           <Grid.Row columns="2">
             <Grid.Column width="13">
-              <Table sortable striped compact>
+              <Table sortable striped compact fixed>
                 <Table.Header>
                   <Table.HeaderCell
                   onClick={() => this.setState({sortByArtist: true, sortByGenre: false, sortByYear: false, sortBySong: false, sortAscending: !this.state.sortAscending})}>
                   <Icon name="user"/>Исполнитель <Icon name={this.state.sortByArtist ? this.state.sortAscending ? "sort ascending" : "sort descending" : "sort"}/></Table.HeaderCell>
                   <Table.HeaderCell
                   onClick={() => this.setState({sortByArtist: false, sortByGenre: false, sortByYear: false, sortBySong: true, sortAscending: !this.state.sortAscending})}
-                  ><Icon name="sound"/>Песня <Icon name={this.state.sortBySong ? this.state.sortAscending ? "sort ascending" : "sort descending" : "sort"}/></Table.HeaderCell>
+                  ><Icon name="sound"/>Композиция <Icon name={this.state.sortBySong ? this.state.sortAscending ? "sort ascending" : "sort descending" : "sort"}/></Table.HeaderCell>
                   <Table.HeaderCell
                   onClick={() => this.setState({sortByArtist: false, sortByGenre: true, sortByYear: false, sortBySong: false, sortAscending: !this.state.sortAscending})}
                   ><Icon name="tag"/>Жанр <Icon name={this.state.sortByGenre ? this.state.sortAscending ? "sort ascending" : "sort descending" : "sort"}/></Table.HeaderCell>
@@ -80,7 +83,7 @@ class App extends React.Component {
                   ><Icon name="calendar"/>Год <Icon name={this.state.sortByYear ? this.state.sortAscending ? "sort ascending" : "sort descending" : "sort"}/></Table.HeaderCell>
                 </Table.Header>
                 <Table.Body>
-                  {playList !== undefined && playList.map(x => 
+                  {playList !== undefined && playList.slice(this.state.sliceBegin,this.state.sliceEnd).map(x => 
                     ((this.state.yearFilter === 'all' || this.state.yearFilter === x.year) &&
                       (this.state.genreFilter === 'all' || this.state.genreFilter === x.genre) &&
                       (this.state.authorFilter === 'all' || this.state.authorFilter === x.author)) &&
@@ -93,7 +96,15 @@ class App extends React.Component {
                   </Table.Row>)}
                 </Table.Body>
                 <Table.Footer>
-                  <Table.HeaderCell colSpan="4">Всего: {playList !== undefined && playList.length}</Table.HeaderCell>
+                  <Table.HeaderCell colSpan="3">Отображено: {this.state.sliceEnd > playList.length ? playList.length: this.state.sliceEnd} из {playList !== undefined && playList.length}</Table.HeaderCell>
+                  <Table.HeaderCell>
+                    <Button.Group>
+                      <Button icon="chevron left" disabled={this.state.sliceBegin < 1} 
+                        onClick={() => this.setState({sliceBegin: this.state.sliceBegin - this.state.pageSize, sliceEnd: this.state.sliceEnd - this.state.pageSize})}/>
+                      <Button icon="chevron right" disabled={this.state.sliceEnd >= playList.length}
+                      onClick={() => this.setState({sliceBegin: this.state.sliceBegin + this.state.pageSize, sliceEnd: this.state.sliceEnd + this.state.pageSize})}/>
+                    </Button.Group>
+                  </Table.HeaderCell>
                 </Table.Footer>
               </Table>
             </Grid.Column>
